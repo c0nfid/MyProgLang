@@ -1,7 +1,7 @@
 ListTokenType = {"T_FLOAT": '([0-9]*\.[0-9]+)', "T_INT": '[0-9]*', "T_PLUS": '\\+', "T_MINUS": '\\-', 'T_ADD': '\\*',
                  "T_DIV": '\\/', "T_LPAREN": '\\(', "T_RPAREN": '\\)', "T_FOR": 'for',
                  "T_SEMICOLON": ';', "T_ASSIGN": '=', "T_NEWLINE" : '[\\n]',"SPACE": '[ \\n\\t\\r]',"T_VAR": '[a-z]*' , "T_<": '\\<',
-                 "T_>": "\\>"}
+                 "T_>": "\\>", "T_FLPAREN": "\\{", "T_FRPAREN": "\\}"}
 import re
 
 

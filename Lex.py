@@ -26,11 +26,35 @@ class Token:
         return f'{self.type}'
 
 
-ListTokenType = {"T_FLOAT": TokenType('FLOAT','([0-9]*\.[0-9]+)'), "T_INT": TokenType('INT', '[0-9]*'), "T_PLUS": TokenType('PLUS', '\\+'), "T_MINUS": TokenType('MINUS', '\\-'), 'T_ADD': TokenType('ADD', '\\*'),
-                 "T_DIV": TokenType('DIV', '\\/'), "T_LPAREN": TokenType('LPAREN', '\\('), "T_RPAREN": TokenType('RPAREN', '\\)'), "T_FOR": TokenType('FOR', 'for'), "T_IF": TokenType('IF', 'if'), "T_ELSE": TokenType('ELSE', "else"),
-                 "T_SEMICOLON": TokenType('SEMICOLON', ';'), "T_ASSIGN": TokenType('ASSIGN', '='), "T_NEWLINE" : TokenType('NEWLINE', '[\\n]'), "SPACE": TokenType('SPACE', '[ \\n\\t\\r]'),"T_VAR": TokenType('VAR', '[a-z]*'), "T_<": TokenType("<", '\\<'),
-                 "T_>": TokenType('>', "\\>"), "T_FLPAREN": TokenType('FLPAREN',"\\{"), "T_FRPAREN": TokenType('FRPAREN', "\\}")}
+class ListTokenType:
+    FLOAT = TokenType('FLOAT', '([0-9]*\.[0-9]+)')
+    INT = TokenType('INT', '[0-9]*')
+    PLUS = TokenType('PLUS', '\\+')
+    MINUS = TokenType('MINUS', '\\-')
+    ADD = TokenType('ADD', '\\*')
+    DIV = TokenType('DIV', '\\/')
+    LPAREN = TokenType('LPAREN', '\\(')
+    RPAREN = TokenType('RPAREN', '\\)')
+    FOR = TokenType('FOR', 'for')
+    IF = TokenType('IF', 'if')
+    ELSE = TokenType('ELSE', "else")
+    SEMICOLON = TokenType('SEMICOLON', ';')
+    ASSIGN = TokenType('ASSIGN', '=')
+    NEWLINE = TokenType('NEWLINE', '[\\n]')
+    SPACE = TokenType('SPACE', '[ \\n\\t\\r]')
+    VAR = TokenType('VAR', '[a-z]*')
+    SIGNLESS = TokenType("<", '\\<')
+    SIGNMORE = TokenType('>', "\\>")
+    FLPAREN = TokenType('FLPAREN', "\\{")
+    FRPAREN = TokenType('FRPAREN', "\\}")
 
+    @classmethod
+    def items(cls):
+        return list(cls.__dict__.items())[1:-5]
+
+    @classmethod
+    def values(cls):
+        return list(cls.__dict__.values())[1:-5]
 
 class Lexer:
     def __init__(self, text):

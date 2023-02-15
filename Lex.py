@@ -67,13 +67,14 @@ class Lexer:
     def next_token(self):
         if (self.pos >= len(self.text)):
             return False
-        for i in ListTokenType:
-            regex = '^' + ListTokenType[i].regex
+
+        for currentToken in ListTokenType.values():
+            regex = '^' + currentToken.regex
             result = re.findall(regex, self.itertxt[self.pos::])
             if result and result[0]:
                 #print(result[0], i)
                 #print(self.pos)
-                self.tokenl.append(Token(ListTokenType[i], result[0], self.pos))
+                self.tokenl.append(Token(currentToken, result[0], self.pos))
                 #print(self.tokenl[0].p())
                 self.pos += len(result[0])
                 return True

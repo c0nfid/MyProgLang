@@ -1,5 +1,19 @@
 import re
-from TokenType import *
+
+
+###################################################################
+## CONSOLE > 3 + 2
+## for (i = 0; i < n; 1) {
+##  ghbdnrjwe = 0;
+##  dsfhkjshdfkskdf += 1;
+## }
+###################################################################
+
+class TokenType:
+    def __init__(self, name, regex):
+        self.name = name
+        self.regex = regex
+
 
 class Token:
     def __init__(self, type, text=None, pos=None):
@@ -42,7 +56,6 @@ class ListTokenType:
     def values(cls):
         return list(cls.__dict__.values())[1:-5]
 
-
 class Lexer:
     def __init__(self, text):
         self.Error = 1
@@ -59,10 +72,10 @@ class Lexer:
             regex = '^' + currentToken.regex
             result = re.findall(regex, self.itertxt[self.pos::])
             if result and result[0]:
-                # print(result[0], i)
-                # print(self.pos)
+                #print(result[0], i)
+                #print(self.pos)
                 self.tokenl.append(Token(currentToken, result[0], self.pos))
-                # print(self.tokenl[0].p())
+                #print(self.tokenl[0].p())
                 self.pos += len(result[0])
                 return True
 
@@ -83,9 +96,9 @@ class Lexer:
 
         if self.Error != 1:
             print('Ошибка в позиции ' + str(self.pos) + ": \'" + self.text[self.pos] + "\'")
-            print('~' * self.pos + '^')
+            print('~'*self.pos + '^')
             return False
-        # print(self.tokenl)
+        #print(self.tokenl)
         return True
 
     def line_tokens(self):
@@ -101,8 +114,11 @@ class Lexer:
             newtoken.append(a)
         return newtoken
 
-
 def run(text):
     lexer = Lexer(text)
     lexer.make_tokens()
+    #for i in lexer.line_tokens():
+    #    for j in i:
+    #        print(j.text, end='')
+    #    print()
     return lexer.getToken()

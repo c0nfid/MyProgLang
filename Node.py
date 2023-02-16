@@ -25,7 +25,7 @@ class NumberNode(Node):
 
 class BinOperationNode(Node):
 
-    def __init__(self, operator: Token, leftNode: Node, rightNode: Token):
+    def __init__(self, operator: Token, leftNode: Node, rightNode: Node):
         self.operator = operator
         self.leftNode = leftNode
         self.rightNode = rightNode

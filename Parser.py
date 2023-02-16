@@ -44,12 +44,11 @@ class Parser:
             return self.parsVarOrNumb();
     def parseFormula(self):
         leftNode = self.parseParenthes()
-        operator = self.match(list(ListTokenType.PLUS, ListTokenType.MINUS))
+        operator = self.match([ListTokenType.PLUS, ListTokenType.MINUS])
         while operator:
             rightNode = self.parseParenthes()
             leftNode = BinOperationNode(operator, leftNode, rightNode)
-            operator = self.match(list(ListTokenType.PLUS, ListTokenType.MINUS))
-
+            operator = self.match([ListTokenType.PLUS, ListTokenType.MINUS])
         return leftNode
 
     def parseExpression(self):
@@ -60,11 +59,14 @@ class Parser:
             if assignOperator:
                 rightFormulNode = self.parseFormula()
                 binaryNode = BinOperationNode(assignOperator, varNode, rightFormulNode)
+                return binaryNode
+        return None
+
     def parseCode(self):
         root = StatementsNode()
         while self.pos < len(self.tokens):
             codeStringNode = self.parseExpression()
-            #self.require([ListTokenType.SEMICOLON])
+            self.require([ListTokenType.SEMICOLON])
             root.addNode(codeStringNode)
         return root
 
@@ -76,15 +78,14 @@ def run_Parser():
 if (i < 3){
     i++
 }'''
-    tes = 'a = 5;'
+    tes = 'a = a - (a + 5);'
     a = Parser(run(tes))
 
     print(a.tokens[0].type.name)
     #print(a.match([ListTokenType.FOR]))
     l = a.parseCode()
-    print(l)
     for i in l.codeStrings:
-        print(type(i))
+        print(i.rightNode.rightNode.operator.text)
 
 
 

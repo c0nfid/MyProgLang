@@ -5,6 +5,6 @@ class Token:
         self.text = text
         self.pos = pos
 
-    def p(self):
+    def __str__(self):
         if self.text: return f'{self.type.name}: {self.text}'
         return f'{self.type}'

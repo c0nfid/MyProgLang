@@ -1,7 +1,7 @@
 from Lex import Token
 
 class Node:
-    None
+    pass
 
 
 class StatementsNode(Node):

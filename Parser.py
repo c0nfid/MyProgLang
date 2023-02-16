@@ -1,5 +1,5 @@
 from Lex import *
-
+from Node import *
 
 class Parser:
     tokens = []  # Token[]
@@ -10,9 +10,7 @@ class Parser:
         self.tokens = tokens
 
     def match(self, expected):
-        print(expected)
         if (self.pos < len(self.tokens)):
-            print()
             currentToken = self.tokens[self.pos]
             if currentToken.type in expected:
                 self.pos += 1
@@ -22,10 +20,53 @@ class Parser:
     def require(self, expected):
         token = self.match(expected)
         if (token == None):
-            print('Error')
+            print('requereError', expected[0].name)
         else:
             return token
         return None
+
+    def parsVarOrNumb(self):
+        number = self.match([ListTokenType.INT, ListTokenType.FLOAT])
+        if number:
+            return NumberNode(number)
+
+        var = self.match([ListTokenType.VAR])
+        if var:
+            return VariableNode(var)
+        print('VarOrNumbERROR')
+
+    def parseParenthes(self):
+        if self.match([ListTokenType.LPAREN]):
+            node = self.parseFormula()
+            self.require([ListTokenType.RPAREN])
+            return node
+        else:
+            return self.parsVarOrNumb();
+    def parseFormula(self):
+        leftNode = self.parseParenthes()
+        operator = self.match(list(ListTokenType.PLUS, ListTokenType.MINUS))
+        while operator:
+            rightNode = self.parseParenthes()
+            leftNode = BinOperationNode(operator, leftNode, rightNode)
+            operator = self.match(list(ListTokenType.PLUS, ListTokenType.MINUS))
+
+        return leftNode
+
+    def parseExpression(self):
+        if(self.match([ListTokenType.VAR])):
+            self.pos -=1
+            varNode = self.parsVarOrNumb()
+            assignOperator = self.match([ListTokenType.ASSIGN])
+            if assignOperator:
+                rightFormulNode = self.parseFormula()
+                binaryNode = BinOperationNode(assignOperator, varNode, rightFormulNode)
+    def parseCode(self):
+        root = StatementsNode()
+        while self.pos < len(self.tokens):
+            codeStringNode = self.parseExpression()
+            #self.require([ListTokenType.SEMICOLON])
+            root.addNode(codeStringNode)
+        return root
 
 
 def run_Parser():
@@ -35,10 +76,20 @@ def run_Parser():
 if (i < 3){
     i++
 }'''
-    a = Parser(run(text))
+    tes = 'a = 5;'
+    a = Parser(run(tes))
 
-    print(a.match([ListTokenType.FOR]))
-    print(a.tokens)
+    print(a.tokens[0].type.name)
+    #print(a.match([ListTokenType.FOR]))
+    l = a.parseCode()
+    print(l)
+    for i in l.codeStrings:
+        print(type(i))
 
+
+
+#def runable(node):
+#    if type(node) == NumberNode:
+#        return parseInt(node.number.text)
 
 run_Parser()

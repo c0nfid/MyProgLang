@@ -83,6 +83,11 @@ class Lexer:
         return False
 
     def getToken(self):
+        temp = []
+        for i in self.tokenl:
+            if i != ListTokenType.SPACE:
+                temp.append(i)
+        self.tokenl = temp
         return self.tokenl
 
     def make_tokens(self):

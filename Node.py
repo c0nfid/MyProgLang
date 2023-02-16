@@ -1,11 +1,12 @@
 from Lex import Token
 
+
 class Node:
     pass
 
 
 class StatementsNode(Node):
-    codeStrings = [] #Nodes
+    codeStrings = []  # Nodes
 
     def addNode(self, node: Token):
         self.codeStrings.append(node)

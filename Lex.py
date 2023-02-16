@@ -1,17 +1,6 @@
 import re
 from TokenType import *
-
-class Token:
-    def __init__(self, type, text=None, pos=None):
-        self.type = type
-        self.text = text
-        self.pos = pos
-
-    def p(self):
-        if self.text: return f'{self.type.name}: {self.text}'
-        return f'{self.type}'
-
-
+from Token import *
 class ListTokenType:
     FLOAT = TokenType('FLOAT', '([0-9]*\.[0-9]+)')
     INT = TokenType('INT', '[0-9]*')

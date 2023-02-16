@@ -1,6 +1,7 @@
 from Lex import *
 from Node import *
 
+
 class Parser:
     tokens = []  # Token[]
     pos = 0
@@ -42,6 +43,7 @@ class Parser:
             return node
         else:
             return self.parsVarOrNumb();
+
     def parseFormula(self):
         leftNode = self.parseParenthes()
         operator = self.match([ListTokenType.PLUS, ListTokenType.MINUS])
@@ -52,8 +54,8 @@ class Parser:
         return leftNode
 
     def parseExpression(self):
-        if(self.match([ListTokenType.VAR])):
-            self.pos -=1
+        if (self.match([ListTokenType.VAR])):
+            self.pos -= 1
             varNode = self.parsVarOrNumb()
             assignOperator = self.match([ListTokenType.ASSIGN])
             if assignOperator:
@@ -66,7 +68,7 @@ class Parser:
         root = StatementsNode()
         while self.pos < len(self.tokens):
             codeStringNode = self.parseExpression()
-            self.require([ListTokenType.SEMICOLON])
+            #self.require([ListTokenType.SEMICOLON])
             root.addNode(codeStringNode)
         return root
 
@@ -78,18 +80,16 @@ def run_Parser():
 if (i < 3){
     i++
 }'''
-    tes = 'a = a - (a + 5);'
+    tes = 'a = a - (a + 5)'
     a = Parser(run(tes))
 
     print(a.tokens[0].type.name)
-    #print(a.match([ListTokenType.FOR]))
     l = a.parseCode()
     for i in l.codeStrings:
         print(i.rightNode.rightNode.operator.text)
 
 
-
-#def runable(node):
+# def runable(node):
 #    if type(node) == NumberNode:
 #        return parseInt(node.number.text)
 

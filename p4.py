@@ -13,6 +13,7 @@ class ListTokenType:
     ELSE = TokenType('ELSE', "else")
     SEMICOLON = TokenType('SEMICOLON', ';')
     ASSIGN = TokenType('ASSIGN', '=')
+    NEQUAL = TokenType('NOTEQUAL', '!=')
     NEWLINE = TokenType('NEWLINE', '[\\n]')
     SPACE = TokenType('SPACE', '[ \\n\\t\\r]')
     VAR = TokenType('VAR', '[a-z]*')

@@ -90,7 +90,7 @@ class Parser:
             return None
 
         leftNode = self.parsVarOrNumb()
-        operator = self.match([ListTokenType.SIGNMORE, ListTokenType.SIGNLESS])
+        operator = self.match([ListTokenType.SIGNMORE, ListTokenType.SIGNLESS, ListTokenType.NEQUAL])
         stop = BinOperationNode(operator, leftNode, self.parsVarOrNumb())
 
         if self.require([ListTokenType.RPAREN]) == None:
@@ -158,10 +158,11 @@ def run_Parser():
      } 
      b = 5
      }
-     while (a < 5) {
+     while (a != 5) {
         g = 7
      }
-     a = 3'''
+     a = 3
+     fuyuf = a + 789 - 89 + 90'''
     tes = 'a = a - (a + 5)'
     a = Parser(run(text))
 
@@ -169,8 +170,6 @@ def run_Parser():
     l = a.parseCode()
     for i in l.codeStrings:
         print(i)
-
-    print(l.codeStrings[1].body[0].rightNode.number.text)
 
 
 # def runable(node):

@@ -23,6 +23,16 @@ class NumberNode(Node):
     def __init__(self, number: Token):
         self.number = number
 
+class Condition(Node):
+    def __init__(self, start: Node, stop: Node, step: Token ): #start - binOP, stop - binOP, step - Int
+        self.start = start
+        self.stop = stop
+        self.step = step
+class LoopNode(Node):
+    def __init__(self, key: Token, condition: Node, body): #body: Token[]
+        self.key = key
+        self.condition = condition
+        self.body = body
 
 class BinOperationNode(Node):
 

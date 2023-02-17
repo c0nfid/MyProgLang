@@ -10,6 +10,7 @@ class ListTokenType:
     DIV = TokenType('DIV', '\\/')
     LPAREN = TokenType('LPAREN', '\\(')
     RPAREN = TokenType('RPAREN', '\\)')
+    WHILE = TokenType('WHILE', 'while')
     FOR = TokenType('FOR', 'for')
     IF = TokenType('IF', 'if')
     ELSE = TokenType('ELSE', "else")

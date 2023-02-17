@@ -85,6 +85,18 @@ class Parser:
             return None
         return Condition(binaryNode, stop, step)
 
+    def parseCondition(self):
+        if self.require([ListTokenType.LPAREN]) == None:
+            return None
+
+        leftNode = self.parsVarOrNumb()
+        operator = self.match([ListTokenType.SIGNMORE, ListTokenType.SIGNLESS])
+        stop = BinOperationNode(operator, leftNode, self.parsVarOrNumb())
+
+        if self.require([ListTokenType.RPAREN]) == None:
+            return None
+
+        return Condition(None, stop, None)
 
     def parseBody(self):
         if self.require([ListTokenType.FLPAREN]) == None:
@@ -118,8 +130,16 @@ class Parser:
             condition = self.parseLoopCondition()
             body = self.parseBody()
             return LoopNode(keyToken, condition, body)
-        
+
+        elif self.match([ListTokenType.WHILE]):
+            self.pos -= 1
+            keyToken = self.match([ListTokenType.WHILE])
+            condition = self.parseCondition()
+            body = self.parseBody()
+            return LoopNode(keyToken, condition, body)
+
         return None
+
 
     def parseCode(self):
         root = StatementsNode()
@@ -138,6 +158,9 @@ def run_Parser():
      } 
      b = 5
      }
+     while (a < 5) {
+        g = 7
+     }
      a = 3'''
     tes = 'a = a - (a + 5)'
     a = Parser(run(text))
@@ -146,6 +169,8 @@ def run_Parser():
     l = a.parseCode()
     for i in l.codeStrings:
         print(i)
+
+    print(l.codeStrings[1].body[0].rightNode.number.text)
 
 
 # def runable(node):

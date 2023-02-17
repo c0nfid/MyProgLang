@@ -28,6 +28,13 @@ class Condition(Node):
         self.start = start
         self.stop = stop
         self.step = step
+
+class ifNode(Node):
+    def __init__(self, condition: Node, body: [], elseNode):
+        self.condition = condition
+        self.body = body
+        self.elseNode = elseNode if elseNode else None
+
 class LoopNode(Node):
     def __init__(self, key: Token, condition: Node, body): #body: Token[]
         self.key = key

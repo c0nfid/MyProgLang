@@ -138,6 +138,15 @@ class Parser:
             body = self.parseBody()
             return LoopNode(keyToken, condition, body)
 
+        elif self.match([ListTokenType.IF]):
+            self.pos -=1
+
+            keyToken = self.match([ListTokenType.IF])
+
+            condition = self.parseCondition()
+            body = self.parseBody()
+            return ifNode(condition, body, None)
+
         return None
 
 
@@ -153,16 +162,20 @@ class Parser:
 
 def run_Parser():
     text = '''for (i = 3; i < n; 35){
-     for (i = 6; i < j; 3){
-        ggdsjdsk = 2234
-     } 
-     b = 5
-     }
-     while (a != 5) {
-        g = 7
-     }
-     a = 3
-     fuyuf = a + 789 - 89 + 90'''
+    for (i = 6; i < j; 3){
+       ggdsjdsk = 2234
+    } 
+    b = 5
+    }
+    while (a != 5) {
+       g = 7
+    }
+    a = 3
+    fuyuf = a + 789 - 89 + 90
+    if (a < 5){
+        dfhsdf = dnbh
+    }
+    '''
     tes = 'a = a - (a + 5)'
     a = Parser(run(text))
 
@@ -170,7 +183,7 @@ def run_Parser():
     l = a.parseCode()
     for i in l.codeStrings:
         print(i)
-
+    print(l.codeStrings[4].condition.stop.leftNode.variable.text)
 
 # def runable(node):
 #    if type(node) == NumberNode:

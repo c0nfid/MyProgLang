@@ -178,7 +178,7 @@ def run_Parser():
     }
     '''
     tes = 'a = a - (a + 5 )'
-    a = Parser(run(text))
+    a = Parser(lexAnalys(text))
 
     #print(a.tokens[0].type.name)
     l = a.parseCode()

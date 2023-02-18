@@ -1,6 +1,8 @@
 import re
 from TokenType import *
 from Token import *
+
+
 class ListTokenType:
     FLOAT = TokenType('FLOAT', '([0-9]*\.[0-9]+)')
     INT = TokenType('INT', '[0-9]*')
@@ -93,7 +95,7 @@ class Lexer:
         return newtoken
 
 
-def run(text):
+def lexAnalys(text):
     lexer = Lexer(text)
     lexer.make_tokens()
     return lexer.getToken()

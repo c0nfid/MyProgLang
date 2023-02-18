@@ -46,7 +46,7 @@ class Parser:
 
     def parseFormula(self):
         leftNode = self.parseParenthes()
-        operator = self.match([ListTokenType.PLUS, ListTokenType.MINUS])
+        operator = self.match([ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE])
         while operator:
             rightNode = self.parseParenthes()
             leftNode = BinOperationNode(operator, leftNode, rightNode)
@@ -148,6 +148,17 @@ class Parser:
             body = self.parseBody()
             return ifNode(condition, body, None)
 
+        elif self.match([ListTokenType.PRINT]):
+            self.pos -=1
+            operator = self.match([ListTokenType.PRINT])
+            if self.require([ListTokenType.LPAREN]) == None:
+                return None
+            operand = self.parseFormula()
+            if self.require([ListTokenType.RPAREN]) == None:
+                return None
+
+            return UnarOperationNode(operator, operand)
+
         return None
 
 
@@ -160,31 +171,6 @@ class Parser:
             root.addNode(codeStringNode)
         return root
 
-
-def run_Parser(text):
-    rtext = '''for (i = 3; i < n; 35){
-    for (i = 6; i < j; 3){
-       ggdsjdsk = 2234
-    } 
-    b = 5
-    }
-    while (a != 5) {
-       g = 7
-    }
-    a = 3
-    fuyuf = a + 789 - 89 + 90
-    if (a < 5){
-        dfhsdf = dnbh
-    }
-    '''
-    tes = 'a = a - (a + 5 )'
-    a = Parser(lexAnalys(text))
-
-    #print(a.tokens[0].type.name)
-    l = a.parseCode()
-    for i in l.codeStrings:
-        print(i)
-    return l
 
 # def runable(node):
 #    if type(node) == NumberNode:

@@ -16,6 +16,7 @@ class ListTokenType:
     FOR = TokenType('FOR', 'for')
     IF = TokenType('IF', 'if')
     ELSE = TokenType('ELSE', "else")
+    PRINT = TokenType('PRINT', "print")
     SEMICOLON = TokenType('SEMICOLON', ';')
     ASSIGN = TokenType('ASSIGN', '=')
     NEQUAL = TokenType('NOTEQUAL', '!=')

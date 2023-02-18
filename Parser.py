@@ -70,8 +70,9 @@ class Parser:
             print("ErrorStartLoop Syntax")
             return None
         if self.require([ListTokenType.SEMICOLON]) == None:
-            print("ErrorSemicolon" + self.pos -1)
-            return None
+            raise Exception("Require Semicolon")
+            #print("ErrorSemicolon" + self.pos -1)
+            #return None
 
         leftNode = self.parsVarOrNumb()
         operator = self.match([ListTokenType.SIGNMORE, ListTokenType.SIGNLESS])
@@ -161,7 +162,7 @@ class Parser:
 
 
 def run_Parser():
-    text = '''for (i = 3; i < n; 35){
+    text = '''for (i = 3, i < n; 35){
     for (i = 6; i < j; 3){
        ggdsjdsk = 2234
     } 
@@ -176,7 +177,7 @@ def run_Parser():
         dfhsdf = dnbh
     }
     '''
-    tes = 'a = a - (a + 5)'
+    tes = 'a = a - (a + 5 )'
     a = Parser(run(text))
 
     #print(a.tokens[0].type.name)

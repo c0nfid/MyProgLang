@@ -161,8 +161,8 @@ class Parser:
         return root
 
 
-def run_Parser():
-    text = '''for (i = 3, i < n; 35){
+def run_Parser(text):
+    rtext = '''for (i = 3; i < n; 35){
     for (i = 6; i < j; 3){
        ggdsjdsk = 2234
     } 
@@ -184,10 +184,10 @@ def run_Parser():
     l = a.parseCode()
     for i in l.codeStrings:
         print(i)
-    print(l.codeStrings[4].condition.stop.leftNode.variable.text)
+    return l
 
 # def runable(node):
 #    if type(node) == NumberNode:
 #        return parseInt(node.number.text)
 
-run_Parser()
+#run_Parser()

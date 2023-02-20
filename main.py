@@ -1,6 +1,14 @@
 import Lex
 
 
-text = '''for (i = 03; i < n; i += 35)
+text = '''for (i = 1; i < n; i += 5) {
+    if (i > 5) a+=1;
+    else a-=1;
+}
 l = 4534534536.234564563453453453453453'''
-print(Lex.run(text))
+t = (Lex.run(text))
+for i in t:
+    a = []
+    for g in i:
+        a.append(str(g))
+    print(a)

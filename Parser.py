@@ -46,11 +46,14 @@ class Parser:
 
     def parseFormula(self):
         leftNode = self.parseParenthes()
-        operator = self.match([ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE])
+        operator = self.match([ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE, ListTokenType.ADD, ListTokenType.DIV])
         while operator:
             rightNode = self.parseParenthes()
+            #opp = self.match([ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE, ListTokenType.ADD, ListTokenType.DIV])
+            #if opp == ListTokenType.ADD or opp == ListTokenType.DIV:
+            #    leftNode = BinOperationNode(operator, leftNode, rightNode)
             leftNode = BinOperationNode(operator, leftNode, rightNode)
-            operator = self.match([ListTokenType.PLUS, ListTokenType.MINUS])
+            operator = self.match([ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE, ListTokenType.ADD, ListTokenType.DIV])
         return leftNode
 
     def parseLoopCondition(self):

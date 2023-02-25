@@ -1,12 +1,11 @@
 from Parser import *
-
+import PySimpleGUI as sg
 class Interpreter:
-
     def __init__(self, sourceCode):
         self.sourceCode = sourceCode
         self.parserObj = Parser(lexAnalys(text))
         self.codeS = self.parserObj.parseCode()
-
+        self.output = list()
 
     def run(self, node):
         if type(node) == NumberNode:
@@ -89,14 +88,20 @@ class Interpreter:
         if type(node) == UnarOperationNode:
             if type(node.operand) == VariableNode:
                 try:
-                    print(self.parserObj.scope[node.operand.variable.text])
+                    temp = self.parserObj.scope[node.operand.variable.text]
+                    print(temp)
+                    self.output.append(temp)
                 except KeyError:
                     raise Exception('Переменная с именем \'' + node.operand.variable.text + '\' не была инициализирована')
             if type(node.operand) == NumberNode:
-                print(node.operand.number.text)
+                temp = node.operand.number.text
+                print(temp)
+                self.output.append(temp)
 
             if type(node.operand) == BinOperationNode:
-                print(self.run(node.operand))
+                temp = self.run(node.operand)
+                print(temp)
+                self.output.append(temp)
             return
 
         if type(node) == StatementsNode:
@@ -114,5 +119,26 @@ for (i = 0; i < 5; 1){
 }
 print(a)
 '''
-a = Interpreter(text)
-a.run(a.codeS)
+google = "sefwef"
+sg.theme("LightPurple")
+layout = [[sg.Text('Multiline Input/Output', font=('Arial Bold', 20), expand_x=True, justification='center')],
+[sg.Multiline("ghjghjg", enable_events=True, key='-INPUT-', expand_x=True, expand_y=True, justification='left')], [sg.Text("Результат: ", key='out' ,font=('Arial Bold', 20), expand_x=True, justification='center')], [sg.Button("SAVE", font=("Times New Roman",12))]]
+win =sg.Window("Data Entry", layout, size=(700, 300))
+while True:
+    event, values = win.Read()
+    if event == sg.WIN_CLOSED:
+        break
+    elif event == 'SAVE':
+        a = ""
+        for i in values["-INPUT-"]:
+            a += i
+        print(a)
+        inter = Interpreter(a)
+        inter.run(inter.codeS)
+        print(inter.parserObj.scope)
+        win["out"].update(str(inter.output))
+        continue
+
+#a = Interpreter(text)
+#a.run(a.codeS)
+#print(a.output[0])

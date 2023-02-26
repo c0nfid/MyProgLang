@@ -6,8 +6,8 @@ class Node:
 
 
 class StatementsNode(Node):
-    codeStrings = []  # Nodes
-
+    def __init__(self):
+        self.codeStrings = []  # Nodes
     def addNode(self, node: Token):
         self.codeStrings.append(node)
 

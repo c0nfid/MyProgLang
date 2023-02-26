@@ -3,15 +3,15 @@ from Node import *
 
 
 class Parser:
-    tokens = []  # Token[]
-    pos = 0
-    scope = {}
 
     def __init__(self, tokens):
+        self.pos = 0
+        self.scope = {}
         self.tokens = tokens
+        print(tokens)
 
     def match(self, expected):
-        if (self.pos < len(self.tokens)):
+        if self.pos < len(self.tokens):
             currentToken = self.tokens[self.pos]
             if currentToken.type in expected:
                 self.pos += 1
@@ -20,7 +20,7 @@ class Parser:
 
     def require(self, expected):
         token = self.match(expected)
-        if (token == None):
+        if token == None:
             print('requereError', expected[0].name)
         else:
             return token
@@ -46,14 +46,18 @@ class Parser:
 
     def parseFormula(self):
         leftNode = self.parseParenthes()
-        operator = self.match([ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE, ListTokenType.ADD, ListTokenType.DIV])
+        operator = self.match(
+            [ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE, ListTokenType.ADD,
+             ListTokenType.DIV])
         while operator:
             rightNode = self.parseParenthes()
-            #opp = self.match([ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE, ListTokenType.ADD, ListTokenType.DIV])
-            #if opp == ListTokenType.ADD or opp == ListTokenType.DIV:
+            # opp = self.match([ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE, ListTokenType.ADD, ListTokenType.DIV])
+            # if opp == ListTokenType.ADD or opp == ListTokenType.DIV:
             #    leftNode = BinOperationNode(operator, leftNode, rightNode)
             leftNode = BinOperationNode(operator, leftNode, rightNode)
-            operator = self.match([ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE, ListTokenType.ADD, ListTokenType.DIV])
+            operator = self.match(
+                [ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE,
+                 ListTokenType.ADD, ListTokenType.DIV])
         return leftNode
 
     def parseLoopCondition(self):
@@ -74,15 +78,15 @@ class Parser:
             return None
         if self.require([ListTokenType.SEMICOLON]) == None:
             raise Exception("Require Semicolon")
-            #print("ErrorSemicolon" + self.pos -1)
-            #return None
+            # print("ErrorSemicolon" + self.pos -1)
+            # return None
 
         leftNode = self.parsVarOrNumb()
         operator = self.match([ListTokenType.SIGNMORE, ListTokenType.SIGNLESS])
         stop = BinOperationNode(operator, leftNode, self.parsVarOrNumb())
 
         if self.require([ListTokenType.SEMICOLON]) == None:
-            print("ErrorSemicolon" + self.pos -1)
+            print("ErrorSemicolon" + self.pos - 1)
             return None
         step = self.match([ListTokenType.INT])
         if self.require([ListTokenType.RPAREN]) == None:
@@ -117,7 +121,6 @@ class Parser:
             body.append(bodyNode)
         return body
 
-
     def parseExpression(self):
         if (self.match([ListTokenType.VAR])):
             self.pos -= 1
@@ -143,7 +146,7 @@ class Parser:
             return LoopNode(keyToken, condition, body)
 
         elif self.match([ListTokenType.IF]):
-            self.pos -=1
+            self.pos -= 1
 
             keyToken = self.match([ListTokenType.IF])
 
@@ -152,7 +155,7 @@ class Parser:
             return ifNode(condition, body, None)
 
         elif self.match([ListTokenType.PRINT]):
-            self.pos -=1
+            self.pos -= 1
             operator = self.match([ListTokenType.PRINT])
             if self.require([ListTokenType.LPAREN]) == None:
                 return None
@@ -164,19 +167,17 @@ class Parser:
 
         return None
 
-
     def parseCode(self):
         root = StatementsNode()
         while self.pos < len(self.tokens):
             codeStringNode = self.parseExpression()
-            self.match([ListTokenType.NEWLINE]) #skip newline tokens after node
-            #self.require([ListTokenType.SEMICOLON])
+            self.match([ListTokenType.NEWLINE])  # skip newline tokens after node
+            # self.require([ListTokenType.SEMICOLON])
             root.addNode(codeStringNode)
         return root
-
 
 # def runable(node):
 #    if type(node) == NumberNode:
 #        return parseInt(node.number.text)
 
-#run_Parser()
+# run_Parser()

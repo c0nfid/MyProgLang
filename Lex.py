@@ -98,5 +98,6 @@ class Lexer:
 
 def lexAnalys(text):
     lexer = Lexer(text)
+    print(id(lexer), lexer)
     lexer.make_tokens()
     return lexer.getToken()

@@ -62,7 +62,7 @@ class Lexer:
     def getToken(self):
         temp = []
         for i in self.tokenl:
-            if i != TokenList['SPACE']:
+            if i.type != TokenList['SPACE']:
                 temp.append(i)
         self.tokenl = temp
         return self.tokenl

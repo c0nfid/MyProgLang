@@ -1,32 +1,31 @@
 import re
 
-TokenList = {"FLOAT": '([0-9]*\.[0-9]+)',
-             "INT": '[0-9]*',
-             "PLUS": '\\+',
-             "MINUS": '\\-',
-             "MULTIPLY": '\\*',
-             "DIV": '\\/',
-             "LPAREN": '\\(',
-             "RPAREN": '\\)',
-             "FOR": 'for',
-             "IF": 'if',
-             "ELSE": 'else',
-             "SEMICOLON": ';',
-             "ASSIGN": '=',
-             "NEWLINE": '[\\n]',
-             "SPACE": '[ \\n\\t\\r]',
-             "VAR": '[a-z]*',
-             "<": '\\<',
-             ">": "\\>",
-             "FLPAREN": "\\{",
-             "FRPAREN": "\\}"}
-
-
 class TokenType:
     def __init__(self, name, regex):
         self.name = name
         self.regex = regex
 
+
+TokenList = {"FLOAT": TokenType("FLOAT", '([0-9]*\.[0-9]+)'),
+             "INT": TokenType("INT", '[0-9]*'),
+             "PLUS": TokenType("PLUS", '\\+'),
+             "MINUS": TokenType("MINUS", '\\-'),
+             "MULTIPLY": TokenType("MULTIPLY", '\\*'),
+             "DIV": TokenType("DIV", '\\/'),
+             "LPAREN": TokenType("LPAREN", '\\('),
+             "RPAREN": TokenType("RPAREN", '\\)'),
+             "FOR": TokenType("FOR", 'for'),
+             "IF": TokenType("IF", 'if'),
+             "ELSE": TokenType("ELSE", 'else'),
+             "SEMICOLON": TokenType("SEMICOLON", ';'),
+             "ASSIGN": TokenType("ASSIGN", '='),
+             "NEWLINE": TokenType("NEWLINE", '[\\n]'),
+             "SPACE": TokenType("SPACE", '[ \\n\\t\\r]'),
+             "VAR": TokenType("VAR", '[a-z]*'),
+             "<": TokenType("<", '\\<'),
+             ">": TokenType(">", "\\>"),
+             "FLPAREN": TokenType("FLPAREN", "\\{"),
+             "FRPAREN": TokenType("FRPAREN", "\\}")}
 
 class Token:
     def __init__(self, type, text=None, pos=None):

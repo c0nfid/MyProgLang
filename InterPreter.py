@@ -1,5 +1,6 @@
 from Parser import *
 import PySimpleGUI as sg
+import time
 
 
 class Interpreter:
@@ -13,7 +14,7 @@ class Interpreter:
             return int(node.number.text) if node.number.type == ListTokenType.INT else float(node.number.text)
         # if type(node) == UnarOperationNode
 
-        if type(node) == BinOperationNode:
+        if isinstance(node, BinOperationNode):
             if node.operator.type == ListTokenType.PLUS:
                 return self.run(node.leftNode) + self.run(node.rightNode)
             elif node.operator.type == ListTokenType.MINUS:
@@ -27,8 +28,7 @@ class Interpreter:
                 variableNode = node.leftNode
                 self.parserObj.scope[variableNode.variable.text] = result
                 return result
-            elif (
-                    node.operator.type == ListTokenType.SIGNMORE or node.operator.type == ListTokenType.SIGNLESS or node.operator.type == ListTokenType.NEQUAL):
+            elif (node.operator.type == ListTokenType.SIGNMORE or node.operator.type == ListTokenType.SIGNLESS or node.operator.type == ListTokenType.NEQUAL):
                 flag = False
                 if type(node.leftNode) == VariableNode:
                     try:
@@ -57,8 +57,7 @@ class Interpreter:
                     return (left < right) if node.operator.type == ListTokenType.SIGNLESS else (
                         (left > right) if node.operator.type == ListTokenType.SIGNMORE else (left != right))
 
-            #
-            #
+
         if type(node) == VariableNode:
             try:
                 if self.parserObj.scope[node.variable.text] or self.parserObj.scope[node.variable.text] == 0:
@@ -127,24 +126,77 @@ print(a)
 print(b)
 '''
 
-
 sg.theme("LightPurple")
-layout = [[sg.Text('Multiline Input/Output', font=('Arial Bold', 20), expand_x=True, justification='center')],
-          [sg.Multiline("Input your text", enable_events=True, key='-INPUT-', expand_x=True, expand_y=True,
-                        justification='left')],
-          [sg.Text("Вывод", key='out', font=('Arial Bold', 16), expand_x=True, justification='left')],
-
-          [sg.Button("SAVE", font=("Times New Roman", 12))]]
+layout = [
+    [sg.Text('MyProgramLanguage', font=('Arial Bold', 20), expand_x=True, justification='center'), sg.Button("⏵"),
+     sg.Button('↓'), sg.Button('🗀')],
+    [sg.Multiline("Input your text", enable_events=True, key='-INPUT-', expand_x=True, expand_y=True,
+                  justification='left')],
+    [sg.Text("Вывод", key='out', font=('Arial Bold', 16), expand_x=True, justification='left')],
+    [sg.Multiline("Запустите программу", enable_events=True, key='-OUTPUT-', size=(100, 10),
+                  justification='left')]]
 win = sg.Window("Data Entry", layout, size=(700, 500))
 while True:
     event, values = win.Read()
     if event == sg.WIN_CLOSED:
         break
-    elif event == 'SAVE':
+    elif event == '⏵':
+        win["-OUTPUT-"].update("Программа выполняется...")
+        time.sleep(0.25)
         inter = Interpreter(values["-INPUT-"])
         inter.run(inter.codeS)
-        win["out"].update(inter.output)
+        out = ""
+        for x in inter.output: out += (str(x) + '\n')
+        win["-OUTPUT-"].update(out)
         continue
+    elif event == '↓':
+        savelayout = [
+            [sg.Text('Input path', font=('Arial Bold', 20), expand_x=True, justification='center'),
+             sg.Button('SAVE')],
+            [sg.InputText()]]
+        savelay = sg.Window("Save File", savelayout, size=(300, 100))
+        while True:
+            saveevent, savevalues = savelay.Read()
+            if saveevent == sg.WIN_CLOSED:
+                break
+            elif saveevent == 'SAVE':
+                file = open(savevalues[0], 'w')
+                print(savevalues[0])
+                file.write(values["-INPUT-"])
+                file.close()
+                savelay.close()
+                break
+    elif event == '🗀':
+        savelayout = [
+            [sg.Text('Input path', font=('Arial Bold', 20), expand_x=True, justification='center'),
+             sg.Button('OPEN')],
+            [sg.InputText()]]
+        savelay = sg.Window("Open File", savelayout, size=(300, 100))
+        while True:
+            saveevent, savevalues = savelay.Read()
+            if saveevent == sg.WIN_CLOSED:
+                savelay.close()
+                break
+            elif saveevent == 'OPEN':
+                try:
+                    file = open(savevalues[0], 'r')
+                    win["-INPUT-"].update(file.read())
+                    file.close()
+                    savelay.close()
+                except FileNotFoundError:
+                    warning = [[sg.Text('File not found')], [sg.Button('OK')]]
+                    warn = sg.Window("Warning", warning, size = (200,75))
+                    while True:
+                        warnevent, warnval = warn.Read()
+                        if warnevent == sg.WIN_CLOSED:
+                            warn.close()
+                            break
+                        elif warnevent == "OK":
+                            warn.close()
+                            break
+                print(savevalues[0])
+
+                break
 
 # a = Interpreter(text)
 # a.run(a.codeS)

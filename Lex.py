@@ -49,10 +49,10 @@ class Lexer:
         if self.pos >= len(self.text):
             return False
         for i in TokenList:
-            regex = '^' + TokenList[i]
+            regex = '^' + TokenList[i].regex
             result = re.findall(regex, self.text[self.pos::])
             if result and result[0]:
-                self.tokenl.append(Token(i, result[0], self.pos))
+                self.tokenl.append(Token(TokenList[i], result[0], self.pos))
                 self.pos += len(result[0])
                 return True
 
@@ -89,4 +89,4 @@ class Lexer:
 def run(text):
     lexer = Lexer(text)
     lexer.make_tokens()
-    return lexer.line_tokens()
+    return lexer.getToken()

@@ -39,9 +39,7 @@ class ListTokenType:
 
 class Lexer:
     def __init__(self, text):
-        self.Error = 1
         self.text = text
-        self.itertxt = text
         self.pos = 0
         self.tokenl = []
 
@@ -51,7 +49,7 @@ class Lexer:
 
         for currentToken in ListTokenType.values():
             regex = '^' + currentToken.regex
-            result = re.findall(regex, self.itertxt[self.pos::])
+            result = re.findall(regex, self.text[self.pos::])
             if result and result[0]:
                 # print(result[0], i)
                 # print(self.pos)
@@ -60,8 +58,7 @@ class Lexer:
                 self.pos += len(result[0])
                 return True
 
-        self.Error = 203
-        return False
+        raise SyntaxWarning('Ошибка в позиции ' + str(self.pos) + ": \'" + self.text[self.pos] + "\'")
 
     def getToken(self):
         temp = []
@@ -75,11 +72,6 @@ class Lexer:
         while (self.next_token()):
             None
 
-        if self.Error != 1:
-            print('Ошибка в позиции ' + str(self.pos) + ": \'" + self.text[self.pos] + "\'")
-            print('~' * self.pos + '^')
-            return False
-        # print(self.tokenl)
         return True
 
     def line_tokens(self):
@@ -98,6 +90,5 @@ class Lexer:
 
 def lexAnalys(text):
     lexer = Lexer(text)
-    print(id(lexer), lexer)
     lexer.make_tokens()
     return lexer.getToken()

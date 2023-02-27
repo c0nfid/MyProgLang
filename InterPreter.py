@@ -130,18 +130,17 @@ sg.theme("LightPurple")
 layout = [
     [sg.Text('MyProgramLanguage', font=('Arial Bold', 20), expand_x=True, justification='center'), sg.Button("⏵"),
      sg.Button('↓'), sg.Button('🗀')],
-    [sg.Multiline("Input your text", enable_events=True, key='-INPUT-', expand_x=True, expand_y=True,
+    [sg.Multiline("Input your code", enable_events=True, key='-INPUT-', expand_x=True, expand_y=True,
                   justification='left')],
-    [sg.Text("Вывод", key='out', font=('Arial Bold', 16), expand_x=True, justification='left')],
-    [sg.Multiline("Запустите программу", enable_events=True, key='-OUTPUT-', size=(100, 10),
+    [sg.Text("Run:", key='out', font=('Arial Bold', 16), expand_x=True, justification='left')],
+    [sg.Multiline("Program output", enable_events=True, key='-OUTPUT-', size=(100, 10),
                   justification='left')]]
-win = sg.Window("Data Entry", layout, size=(700, 500))
+win = sg.Window("Interpreter", layout, size=(700, 500))
 while True:
     event, values = win.Read()
     if event == sg.WIN_CLOSED:
         break
     elif event == '⏵':
-        win["-OUTPUT-"].update("Программа выполняется...")
         time.sleep(0.25)
         inter = Interpreter(values["-INPUT-"])
         inter.run(inter.codeS)
@@ -195,7 +194,6 @@ while True:
                             warn.close()
                             break
                 print(savevalues[0])
-
                 break
 
 # a = Interpreter(text)

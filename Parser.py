@@ -34,7 +34,7 @@ class Parser:
         var = self.match([ListTokenType.VAR])
         if var:
             return VariableNode(var)
-        print('VarOrNumbERROR')
+        raise SyntaxError(f'Ошибка синтаксиса на позиции {self.pos}')
 
     def parseParenthes(self):
         if self.match([ListTokenType.LPAREN]):
@@ -71,13 +71,12 @@ class Parser:
                 rightFormulNode = self.parseFormula()
                 binaryNode = BinOperationNode(assignOperator, varNode, rightFormulNode)
             else:
-                print("Error Assign syntax")
-                return None
+                raise SyntaxError("Ошибка в синтаксисе присваивания")
         else:
-            print("ErrorStartLoop Syntax")
-            return None
+            raise SyntaxError("Ошибка в определении цикла")
+
         if self.require([ListTokenType.SEMICOLON]) == None:
-            raise Exception("Require Semicolon")
+            raise Exception(f'Ожидается знак \';\' на позиции {self.pos - 1}')
             # print("ErrorSemicolon" + self.pos -1)
             # return None
 
@@ -86,16 +85,15 @@ class Parser:
         stop = BinOperationNode(operator, leftNode, self.parsVarOrNumb())
 
         if self.require([ListTokenType.SEMICOLON]) == None:
-            print("ErrorSemicolon" + self.pos - 1)
-            return None
+            raise SyntaxError(f'Ожидается знак \';\' на позиции {self.pos - 1}')
         step = self.match([ListTokenType.INT])
         if self.require([ListTokenType.RPAREN]) == None:
-            return None
+            raise SyntaxError(f'Ожидается знак \')\' на позиции {self.pos - 1}')
         return Condition(binaryNode, stop, step)
 
     def parseCondition(self):
         if self.require([ListTokenType.LPAREN]) == None:
-            return None
+            raise SyntaxError(f'Ожидается знак \'(\' на позиции {self.pos - 1}')
 
         leftNode = self.parsVarOrNumb()
         operator = self.match([ListTokenType.SIGNMORE, ListTokenType.SIGNLESS, ListTokenType.NEQUAL])
@@ -108,7 +106,7 @@ class Parser:
 
     def parseBody(self):
         if self.require([ListTokenType.FLPAREN]) == None:
-            return None
+            raise SyntaxError(f'Ожидается знак открытия тела на позиции {self.pos - 1}')
         body = []
         while (self.match([ListTokenType.FRPAREN]) == None):
             if self.match([ListTokenType.NEWLINE]) == None:
@@ -158,10 +156,10 @@ class Parser:
             self.pos -= 1
             operator = self.match([ListTokenType.PRINT])
             if self.require([ListTokenType.LPAREN]) == None:
-                return None
+                raise SyntaxError(f'Ожидается знак \'(\' на позиции {self.pos - 1}')
             operand = self.parseFormula()
             if self.require([ListTokenType.RPAREN]) == None:
-                return None
+                raise SyntaxError(f'Ожидается знак \')\' на позиции {self.pos - 1}')
 
             return UnarOperationNode(operator, operand)
 

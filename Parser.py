@@ -8,7 +8,6 @@ class Parser:
         self.pos = 0
         self.scope = {}
         self.tokens = tokens
-        print(tokens)
 
     def match(self, expected):
         if self.pos < len(self.tokens):
@@ -51,9 +50,6 @@ class Parser:
              ListTokenType.DIV])
         while operator:
             rightNode = self.parseParenthes()
-            # opp = self.match([ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE, ListTokenType.ADD, ListTokenType.DIV])
-            # if opp == ListTokenType.ADD or opp == ListTokenType.DIV:
-            #    leftNode = BinOperationNode(operator, leftNode, rightNode)
             leftNode = BinOperationNode(operator, leftNode, rightNode)
             operator = self.match(
                 [ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE,
@@ -77,8 +73,6 @@ class Parser:
 
         if self.require([ListTokenType.SEMICOLON]) == None:
             raise Exception(f'Ожидается знак \';\' на позиции {self.pos - 1}')
-            # print("ErrorSemicolon" + self.pos -1)
-            # return None
 
         leftNode = self.parsVarOrNumb()
         operator = self.match([ListTokenType.SIGNMORE, ListTokenType.SIGNLESS])
@@ -173,9 +167,3 @@ class Parser:
             # self.require([ListTokenType.SEMICOLON])
             root.addNode(codeStringNode)
         return root
-
-# def runable(node):
-#    if type(node) == NumberNode:
-#        return parseInt(node.number.text)
-
-# run_Parser()

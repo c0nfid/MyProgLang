@@ -1,4 +1,6 @@
 from TokenType import TokenType
+
+
 class Token:
     def __init__(self, type, text=None, pos=None):
         self.type = type

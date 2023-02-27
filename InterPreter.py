@@ -12,7 +12,6 @@ class Interpreter:
     def run(self, node):
         if isinstance(node, NumberNode):
             return int(node.number.text) if node.number.type == ListTokenType.INT else float(node.number.text)
-        # if type(node) == UnarOperationNode
 
         if isinstance(node, BinOperationNode):
             if node.operator.type == ListTokenType.PLUS:
@@ -28,9 +27,10 @@ class Interpreter:
                 variableNode = node.leftNode
                 self.parserObj.scope[variableNode.variable.text] = result
                 return result
-            elif (node.operator.type == ListTokenType.SIGNMORE or node.operator.type == ListTokenType.SIGNLESS or node.operator.type == ListTokenType.NEQUAL):
+            elif (
+                    node.operator.type == ListTokenType.SIGNMORE or node.operator.type == ListTokenType.SIGNLESS or node.operator.type == ListTokenType.NEQUAL):
                 flag = False
-                if type(node.leftNode) == VariableNode:
+                if isinstance(node.leftNode, VariableNode):
                     try:
                         if self.parserObj.scope[node.leftNode.variable.text] or self.parserObj.scope[
                             node.leftNode.variable.text] == 0:
@@ -38,7 +38,7 @@ class Interpreter:
                     except KeyError:
                         raise Exception(
                             'Переменная с именем \'' + node.leftNode.variable.text + '\' не была инициализирована')
-                if type(node.rightNode) == VariableNode:
+                if isinstance(node.rightNode, VariableNode):
                     try:
                         if self.parserObj.scope[node.rightNode.variable.text] or self.parserObj.scope[
                             node.rightNode.variable.text] == 0:
@@ -57,22 +57,21 @@ class Interpreter:
                     return (left < right) if node.operator.type == ListTokenType.SIGNLESS else (
                         (left > right) if node.operator.type == ListTokenType.SIGNMORE else (left != right))
 
-
-        if type(node) == VariableNode:
+        if isinstance(node, VariableNode):
             try:
                 if self.parserObj.scope[node.variable.text] or self.parserObj.scope[node.variable.text] == 0:
                     return self.parserObj.scope[node.variable.text]
             except KeyError:
                 raise Exception('Переменная с именем \'' + node.variable.text + '\' не была инициализирована')
 
-        if type(node) == ifNode:
+        if isinstance(node, ifNode):
             condition = self.run(node.condition.stop)
             if condition:
                 for i in node.body:
                     self.run(i)
             return
 
-        if type(node) == LoopNode:
+        if isinstance(node, LoopNode):
             if node.key.type == ListTokenType.WHILE:
                 condition = self.run(node.condition.stop)
                 if condition:
@@ -93,24 +92,24 @@ class Interpreter:
                     self.run(node)
             return
 
-        if type(node) == UnarOperationNode:
-            if type(node.operand) == VariableNode:
+        if isinstance(node, UnarOperationNode):
+            if isinstance(node.operand, VariableNode):
                 try:
                     temp = self.parserObj.scope[node.operand.variable.text]
                     self.output.append(temp)
                 except KeyError:
                     raise Exception(
                         'Переменная с именем \'' + node.operand.variable.text + '\' не была инициализирована')
-            if type(node.operand) == NumberNode:
+            if isinstance(node.operand, NumberNode):
                 temp = node.operand.number.text
                 self.output.append(temp)
 
-            if type(node.operand) == BinOperationNode:
+            if isinstance(node.operand, BinOperationNode):
                 temp = self.run(node.operand)
                 self.output.append(temp)
             return
 
-        if type(node) == StatementsNode:
+        if isinstance(node, StatementsNode):
             for i in node.codeStrings:
                 self.run(i)
             return
@@ -184,7 +183,7 @@ while True:
                     savelay.close()
                 except FileNotFoundError:
                     warning = [[sg.Text('File not found')], [sg.Button('OK')]]
-                    warn = sg.Window("Warning", warning, size = (200,75))
+                    warn = sg.Window("Warning", warning, size=(200, 75))
                     while True:
                         warnevent, warnval = warn.Read()
                         if warnevent == sg.WIN_CLOSED:
@@ -195,7 +194,3 @@ while True:
                             break
                 print(savevalues[0])
                 break
-
-# a = Interpreter(text)
-# a.run(a.codeS)
-# print(a.output[0])

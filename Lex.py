@@ -70,7 +70,7 @@ class Lexer:
 
     def make_tokens(self):
         while (self.next_token()):
-            None
+            pass
 
         return True
 

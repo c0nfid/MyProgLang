@@ -141,11 +141,16 @@ while True:
         break
     elif event == '⏵':
         time.sleep(0.25)
-        inter = Interpreter(values["-INPUT-"])
-        inter.run(inter.codeS)
-        out = ""
-        for x in inter.output: out += (str(x) + '\n')
-        win["-OUTPUT-"].update(out)
+        try:
+            inter = Interpreter(values["-INPUT-"])
+            inter.run(inter.codeS)
+            out = ""
+            for x in inter.output: out += (str(x) + '\n')
+            win["-OUTPUT-"].update(out)
+        except SyntaxError as err:
+            win["-OUTPUT-"].update(err)
+        except Exception as err:
+            win["-OUTPUT-"].update(err)
         continue
     elif event == '↓':
         savelayout = [

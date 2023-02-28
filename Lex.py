@@ -17,6 +17,7 @@ class ListTokenType:
     IF = TokenType('IF', 'if')
     ELSE = TokenType('ELSE', "else")
     PRINT = TokenType('PRINT', "print")
+    COLON = TokenType('COLON', ',')
     SEMICOLON = TokenType('SEMICOLON', ';')
     ASSIGN = TokenType('ASSIGN', '=')
     NEQUAL = TokenType('NOTEQUAL', '!=')
@@ -27,6 +28,10 @@ class ListTokenType:
     SIGNMORE = TokenType('>', "\\>")
     FLPAREN = TokenType('FLPAREN', "\\{")
     FRPAREN = TokenType('FRPAREN', "\\}")
+    LIST = TokenType('LIST', "list")
+    SQLPAREN = TokenType('SQLPAREN', '\\[')
+    SQRPAREN = TokenType('SQRPAREN', '\\]')
+
 
     @classmethod
     def items(cls):
@@ -58,7 +63,7 @@ class Lexer:
                 self.pos += len(result[0])
                 return True
 
-        raise SyntaxWarning('Ошибка в позиции ' + str(self.pos) + ": \'" + self.text[self.pos] + "\'")
+        raise SyntaxError('Ошибка в позиции ' + str(self.pos) + ": \'" + self.text[self.pos] + "\'")
 
     def getToken(self):
         temp = []

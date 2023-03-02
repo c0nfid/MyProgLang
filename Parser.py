@@ -32,6 +32,11 @@ class Parser:
 
         var = self.match([ListTokenType.VAR])
         if var:
+            if self.match([ListTokenType.SQLPAREN]):
+                iter = self.parseFormula()
+                varNode = CallListNode(var, iter)
+                self.require([ListTokenType.SQRPAREN])
+                return varNode
             return VariableNode(var)
         raise SyntaxError(f'Ошибка синтаксиса на позиции {self.pos}')
 
@@ -54,23 +59,53 @@ class Parser:
             return self.parsVarOrNumb()
 
     def parseFormula(self):
-        leftNode = self.parseParenthes()
-        operator = self.match(
-            [ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE, ListTokenType.ADD,
-             ListTokenType.DIV])
-        while operator:
-            rightNode = self.parseParenthes()
-            leftNode = BinOperationNode(operator, leftNode, rightNode)
+        if self.match([ListTokenType.LIST, ListTokenType.SQLPAREN]):
+            flag = False
+            if self.match([ListTokenType.LPAREN]):
+                flag = True
+            array = list()
+            array.append(self.parseParenthes())
+            operator = self.match([ListTokenType.COLON])
+            while operator:
+                array.append(self.parseParenthes())
+                operator = self.match([ListTokenType.COLON])
+            if flag:
+                self.require([ListTokenType.RPAREN])
+            else:
+                self.require([ListTokenType.SQRPAREN])
+            return ListNode(array)
+        elif (self.match([ListTokenType.VAR])):
+            self.pos -= 1
+            varNode = self.parsVarOrNumb()
+            if self.match([ListTokenType.DOT]):
+                key = self.match([ListTokenType.APPEND, ListTokenType.INDEX, ListTokenType.FIND])
+                action = ''
+                if key and self.match([ListTokenType.LPAREN]):
+                    addable = self.parseFormula()
+                    self.require([ListTokenType.RPAREN])
+                    if key.type == ListTokenType.APPEND: action = "append"
+                    elif key.type == ListTokenType.INDEX: action = "index"
+                    elif key.type == ListTokenType.FIND: action = "find"
+                    return ListActionNode(varNode, action, addable)
+                else:
+                    raise Exception("Ошибка синтаксиса")
+        else:
+            leftNode = self.parseParenthes()
             operator = self.match(
-                [ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE,ListTokenType.ADD,
+                [ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE, ListTokenType.ADD,
                  ListTokenType.DIV])
-
-        return leftNode
+            while operator:
+                rightNode = self.parseParenthes()
+                leftNode = BinOperationNode(operator, leftNode, rightNode)
+                operator = self.match(
+                    [ListTokenType.PLUS, ListTokenType.MINUS, ListTokenType.SIGNLESS, ListTokenType.SIGNMORE,ListTokenType.ADD,
+                     ListTokenType.DIV])
+            return leftNode
 
     def parseLoopCondition(self):
         if self.require([ListTokenType.LPAREN]) == None:
             return None
-        if (self.match([ListTokenType.VAR])):
+        if self.match([ListTokenType.VAR]):
             self.pos -= 1
             varNode = self.parsVarOrNumb()
             assignOperator = self.match([ListTokenType.ASSIGN])
@@ -128,6 +163,18 @@ class Parser:
         if (self.match([ListTokenType.VAR])):
             self.pos -= 1
             varNode = self.parsVarOrNumb()
+            if self.match([ListTokenType.DOT]):
+                if self.match([ListTokenType.APPEND]) and self.match([ListTokenType.LPAREN]):
+                    addable = self.parseFormula()
+                    self.require([ListTokenType.RPAREN])
+                    return ListActionNode(varNode, "append", addable)
+                elif self.match([ListTokenType.INDEX]) and self.match([ListTokenType.LPAREN]):
+                    addable = self.parseFormula()
+                    self.require([ListTokenType.RPAREN])
+                    return ListActionNode(varNode, "index", addable)
+                else:
+                    raise Exception("Ошибка синтаксиса")
+
             assignOperator = self.match([ListTokenType.ASSIGN])
             if assignOperator:
                 rightFormulNode = self.parseFormula()

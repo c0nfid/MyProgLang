@@ -13,19 +13,35 @@ class Interpreter:
         if isinstance(node, NumberNode):
             return int(node.number.text) if node.number.type == ListTokenType.INT else float(node.number.text)
 
+        if isinstance(node, ListNode):
+            array = []
+            for i in node.list:
+                array.append(self.run(i))
+            return array
+
         if isinstance(node, BinOperationNode):
             if node.operator.type == ListTokenType.PLUS:
                 return self.run(node.leftNode) + self.run(node.rightNode)
             elif node.operator.type == ListTokenType.MINUS:
-                return self.run(node.leftNode) - self.run(node.rightNode)
+                if isinstance(node.leftNode, ListNode):
+                    raise Exception("Операция вычитания с списками не поддерживается")
+                else:
+                    return self.run(node.leftNode) - self.run(node.rightNode)
             elif node.operator.type == ListTokenType.ADD:
-                return self.run(node.leftNode) * self.run(node.rightNode)
+                if isinstance(node.leftNode, ListNode):
+                    raise Exception("Операция умножения с списками не поддерживается")
+                else:
+                    return self.run(node.leftNode) * self.run(node.rightNode)
             elif node.operator.type == ListTokenType.DIV:
                 return self.run(node.leftNode) / self.run(node.rightNode)
             elif node.operator.type == ListTokenType.ASSIGN:
                 result = self.run(node.rightNode)
                 variableNode = node.leftNode
-                self.parserObj.scope[variableNode.variable.text] = result
+                if isinstance(variableNode, CallListNode):
+                    index = self.run(variableNode.iter)
+                    self.parserObj.scope[variableNode.list.text][index] = result
+                else:
+                    self.parserObj.scope[variableNode.variable.text] = result
                 return result
             elif (
                     node.operator.type == ListTokenType.SIGNMORE or node.operator.type == ListTokenType.SIGNLESS or node.operator.type == ListTokenType.NEQUAL):
@@ -71,6 +87,16 @@ class Interpreter:
                     self.run(i)
             return
 
+        if isinstance(node, ListActionNode):
+            result = self.run(node.item)
+            if node.action == "append":
+                self.parserObj.scope[node.list.variable.text].append(result)
+            elif node.action == "index":
+                return self.parserObj.scope[node.list.variable.text].index(result)
+            elif node.action == 'find':
+                return [index for index, value in enumerate(self.parserObj.scope[node.list.variable.text]) if value == result]
+            return None
+
         if isinstance(node, LoopNode):
             if node.key.type == ListTokenType.WHILE:
                 condition = self.run(node.condition.stop)
@@ -93,17 +119,29 @@ class Interpreter:
             return
 
         if isinstance(node, UnarOperationNode):
+            if isinstance(node.operand, CallListNode):
+                index = self.run(node.operand.iter)
+                if self.parserObj.scope[node.operand.list.text][index] or self.parserObj.scope[node.operand.list.text][
+                    index] == 0:
+                    temp = self.parserObj.scope[node.operand.list.text][index]
+                    self.output.append(temp)
+                return
+            if isinstance(node.operand, ListActionNode):
+                temp = self.run(node.operand)
+                self.output.append(temp if type(temp) != list else temp.copy())
+                return
             if isinstance(node.operand, VariableNode):
                 try:
                     temp = self.parserObj.scope[node.operand.variable.text]
-                    self.output.append(temp)
+                    self.output.append(temp if type(temp) != list else temp.copy())
                 except KeyError:
                     raise Exception(
                         'Переменная с именем \'' + node.operand.variable.text + '\' не была инициализирована')
+
             if isinstance(node.operand, NumberNode):
                 temp = node.operand.number.text
                 self.output.append(temp)
-
+                return
             if isinstance(node.operand, BinOperationNode):
                 temp = self.run(node.operand)
                 self.output.append(temp)

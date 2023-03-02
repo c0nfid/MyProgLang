@@ -59,3 +59,20 @@ class UnarOperationNode(Node):
     def __init__(self, operator, operand):
         self.operator = operator
         self.operand = operand
+
+class ListNode(Node):
+
+    def __init__(self, list):
+        self.list = list
+
+class CallListNode(Node):
+
+    def __init__(self, list, iter):
+        self.list = list
+        self.iter = iter
+
+class ListActionNode(Node):
+    def __init__(self, list, action, item):
+        self.list = list
+        self.action = action
+        self.item = item

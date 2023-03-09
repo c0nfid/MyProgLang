@@ -2,12 +2,10 @@ from Lex import *
 from Nodes import *
 
 class Parser:
-    tokens = []  # Token[]
-    pos = 0
-    scope = {}
 
     def __init__(self, tokens):
-        self.tokens = tokens
+        self.tokens = tokens #Token[]
+        self.pos = 0
 
     def match(self, expected):
         if (self.pos < len(self.tokens)):
@@ -40,15 +38,15 @@ class Parser:
         if self.match([TokenList['LPAREN']]):
             node = self.parseFormula()
             self.require([TokenList['RPAREN']])
-            if self.match([TokenList['ADD']]):
+            if self.match([TokenList['MULTIPLY']]):
                 self.pos -= 1
-                operator = self.match([TokenList['ADD']])
+                operator = self.match([TokenList['MULTIPLY']])
                 rightNode = self.parseParenthes()
                 node = BinOperationNode(operator, node, rightNode)
             return node
-        elif self.pos + 1 < len(self.tokens) and self.tokens[self.pos + 1].type == TokenList['ADD']:
-            leftNode = self.parsVarOrNumb()
-            operator = self.match([TokenList['ADD']])
+        elif self.pos + 1 < len(self.tokens) and self.tokens[self.pos + 1].type == TokenList['MULTIPLY']:
+            leftNode = self.parseVariableOrNumbers()
+            operator = self.match([TokenList['MULTIPLY']])
             rightNode = self.parseParenthes()
             return BinOperationNode(operator, leftNode, rightNode)
         else:
@@ -56,17 +54,18 @@ class Parser:
 
     def parseFormula(self):
         leftNode = self.parseParenthes()
-        operator = self.match([TokenList['PLUS'], TokenList['MINUS'], TokenList['SIGNLESS'], TokenList['SIGNMORE'], TokenList['ADD'], TokenList['DIV']])
+        operator = self.match([TokenList['PLUS'], TokenList['MINUS'], TokenList['<'], TokenList['>'], TokenList['MULTIPLY'], TokenList['DIV']])
         while operator:
             rightNode = self.parseParenthes()
             leftNode = BinOperationNode(operator, leftNode, rightNode)
-            operator = self.match([TokenList['PLUS'], TokenList['MINUS'], TokenList['SIGNLESS'], TokenList['SIGNMORE'], TokenList['ADD'], TokenList['DIV']])
+            operator = self.match([TokenList['PLUS'], TokenList['MINUS'], TokenList['<'], TokenList['>'], TokenList['MULTIPLY'], TokenList['DIV']])
 
         return leftNode
 
     def parseCondition(self, loop_type):
         if self.require([TokenList['LPAREN']]) is None:
             return None
+
         if loop_type.type == TokenList['FOR']:
             if self.match([TokenList['VAR']]):
                 self.pos -= 1
@@ -118,10 +117,12 @@ class Parser:
                 pass
             if self.match([TokenList['FRPAREN']]):
                 return body
+
             bodyNode = self.parseExpression()
             if bodyNode == None:
                 return None
             body.append(bodyNode)
+
         return body
 
     def parseExpression(self):
@@ -139,6 +140,9 @@ class Parser:
             key_token = self.match([TokenList['FOR'], TokenList['WHILE'], TokenList['IF']])
             condition = self.parseCondition(key_token)
             body = self.parseBody()
+            if key_token.type == TokenList['IF']:
+                return ifNode(key_token, condition, body)
+
             return LoopNode(key_token, condition, body)
 
         return None
@@ -153,19 +157,18 @@ class Parser:
 
 
 def run_Parser():
-    text = '''for (i = 3; i < n; 35){
+    text = '''a = 3 + 5
+    for (i = 3; i < n; 35){
             while (a != 5) {
                 g = 7
+                a = 5
             }
          b = 5
          }
-         a = 3'''
+         a = 3 + 5 '''
     a = Parser(run(text))
 
 
     l = a.parseCode()
     for i in l.codeNodes:
-        print(i.body[0].condition.stop if type(i) is LoopNode else i.right)
-
-
-run_Parser()
+        print(i)

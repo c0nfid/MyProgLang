@@ -1,5 +1,6 @@
 from Lex import Token
 
+
 class Node:
     pass
 
@@ -30,3 +31,25 @@ class BinOperationNode(Node):
         self.operator = operator
         self.left = leftNode
         self.right = rightNode
+
+
+class LoopConditionNode(Node):
+
+    def __init__(self, start, stop, step):
+        self.start = start
+        self.step = step
+        self.stop = stop
+
+
+class LoopNode(Node):
+
+    def __init__(self, ltype, condition, body):
+        self.type = ltype
+        self.condition = condition
+        self.body = body
+
+class ifNode(Node): #change name please
+    def __init__(self, condition: Node, body: [], elseNode):
+        self.condition = condition
+        self.body = body
+        self.elseNode = elseNode if elseNode else None

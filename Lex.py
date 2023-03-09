@@ -5,6 +5,12 @@ class TokenType:
         self.name = name
         self.regex = regex
 
+    def __eq__(self, other):
+        if type(other) is not TokenType:
+            raise TypeError(other.name, type(other))
+
+        return self.name == other.name and self.regex == other.regex
+
 
 TokenList = {"FLOAT": TokenType("FLOAT", '([0-9]*\.[0-9]+)'),
              "INT": TokenType("INT", '[0-9]*'),
@@ -17,11 +23,13 @@ TokenList = {"FLOAT": TokenType("FLOAT", '([0-9]*\.[0-9]+)'),
              "FOR": TokenType("FOR", 'for'),
              "IF": TokenType("IF", 'if'),
              "ELSE": TokenType("ELSE", 'else'),
+             "WHILE": TokenType('WHILE', 'while'),
              "SEMICOLON": TokenType("SEMICOLON", ';'),
              "ASSIGN": TokenType("ASSIGN", '='),
              "NEWLINE": TokenType("NEWLINE", '[\\n]'),
              "SPACE": TokenType("SPACE", '[ \\n\\t\\r]'),
              "VAR": TokenType("VAR", '[a-z]*'),
+             "!=": TokenType("!=", '!='),
              "<": TokenType("<", '\\<'),
              ">": TokenType(">", "\\>"),
              "FLPAREN": TokenType("FLPAREN", "\\{"),

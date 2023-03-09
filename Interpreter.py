@@ -52,7 +52,8 @@ class Interpreter:
                     right = int(node.right.number.text)
                     return (left < right) if node.operator.type == TokenList['<'] else (
                         (left > right) if node.operator.type == TokenList['>'] else (left != right))
-
+            else:
+                raise ValueError("Переменная не была объявлена")
             #
             #
         if type(node) == VarNode:
@@ -119,14 +120,14 @@ def startCoding(string_code):
 
 
 text = '''a = 3 + 5
-n = 1
-    for (i = 3; i < n; 35){
+n = 5
+i = 3
+    for (i; i < n; 35){
             while (a != 5) {
                 g = 7
                 a = 5
             }
          b = 5
          }
-         a = n < i 
          print(a)'''
 startCoding(text)

@@ -72,13 +72,9 @@ class Parser:
 
                 var_node = self.parseVariableOrNumbers()
                 assign = self.match([TokenList['ASSIGN']])
+                right_node = self.parseFormula() if assign else None
 
-                if assign:
-                    right_node = self.parseFormula()
-                    start = BinOperationNode(assign, var_node, right_node)
-                else:
-                    print("Error Assign syntax")
-                    return None
+                start = BinOperationNode(assign, var_node, right_node)
 
             else:
                 print("ErrorStartLoop Syntax, require")

@@ -22,6 +22,7 @@ TokenList = {"FLOAT": TokenType("FLOAT", '([0-9]*\.[0-9]+)'),
              "RPAREN": TokenType("RPAREN", '\\)'),
              "FOR": TokenType("FOR", 'for'),
              "IF": TokenType("IF", 'if'),
+             "PRINT": TokenType("PRINT", 'print'),
              "ELSE": TokenType("ELSE", 'else'),
              "WHILE": TokenType('WHILE', 'while'),
              "SEMICOLON": TokenType("SEMICOLON", ';'),
@@ -82,7 +83,7 @@ class Lexer:
         if self.Error != 1:
             print('Ошибка в позиции ' + str(self.pos) + ": \'" + self.text[self.pos] + "\'")
             return False
-        print(self.tokenl)
+
         return True
 
     def line_tokens(self):

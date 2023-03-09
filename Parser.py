@@ -141,10 +141,20 @@ class Parser:
             condition = self.parseCondition(key_token)
             body = self.parseBody()
             if key_token.type == TokenList['IF']:
-                return ifNode(key_token, condition, body)
+                return ConditionalNode(key_token, condition, body)
 
             return LoopNode(key_token, condition, body)
 
+        elif self.match([TokenList['PRINT']]):
+            self.pos -=1
+            operator = self.match([TokenList['PRINT']])
+            if self.require([TokenList['LPAREN']]) == None:
+                return None
+            operand = self.parseFormula()
+            if self.require([TokenList['RPAREN']]) == None:
+                return None
+
+            return CommNode(operator, operand)
         return None
 
     def parseCode(self):

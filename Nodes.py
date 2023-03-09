@@ -48,8 +48,15 @@ class LoopNode(Node):
         self.condition = condition
         self.body = body
 
-class ifNode(Node): #change name please
+
+class ConditionalNode(Node):  # change name please
     def __init__(self, condition: Node, body: [], elseNode):
         self.condition = condition
         self.body = body
         self.elseNode = elseNode if elseNode else None
+
+
+class CommNode(Node):
+    def __init__(self, operator, operand):
+        self.operator = operator
+        self.operand = operand

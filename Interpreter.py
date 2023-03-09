@@ -1,5 +1,6 @@
 from Parser import *
 
+
 class Interpreter:
 
     def __init__(self, sourceCode, strings):
@@ -22,7 +23,8 @@ class Interpreter:
                 self.scope[variableNode.variable.text] = result
                 return result
             elif (
-                    node.operator.type == TokenList['>'] or node.operator.type == TokenList['<'] or node.operator.type == TokenList['!=']):
+                    node.operator.type == TokenList['>'] or node.operator.type == TokenList[
+                '<'] or node.operator.type == TokenList['!=']):
                 flag = False
                 if type(node.left) == VarNode:
                     try:
@@ -60,7 +62,7 @@ class Interpreter:
             except KeyError:
                 raise Exception('Переменная с именем \'' + node.variable.text + '\' не была инициализирована')
 
-        if type(node) == ifNode:
+        if type(node) == ConditionalNode:
             condition = self.run(node.condition.stop)
             if condition:
                 for i in node.body:
@@ -88,29 +90,30 @@ class Interpreter:
                     self.run(node)
             return
 
-        #if type(node) == UnarOperationNode:
-        #    if type(node.operand) == VarNode:
-        #        try:
-        #            print(self.parserObj.scope[node.operand.variable.text])
-        #        except KeyError:
-        #            raise Exception(
-        #                'Переменная с именем \'' + node.operand.variable.text + '\' не была инициализирована')
-        #    if type(node.operand) == NumberNode:
-        #        print(node.operand.number.text)
-#
-        #    if type(node.operand) == BinOperationNode:
-        #        print(self.run(node.operand))
-        #    return
+        if type(node) == CommNode:
+            if type(node.operand) == VarNode:
+                try:
+                    print(self.scope[node.operand.variable.text])
+                except KeyError:
+                    raise Exception(
+                        'Переменная с именем \'' + node.operand.variable.text + '\' не была инициализирована')
+            if type(node.operand) == NumberNode:
+                print(node.operand.number.text)
+
+            if type(node.operand) == BinOperationNode:
+                print(self.run(node.operand))
+            return
 
         if isinstance(node, RootNode):
             for i in node.codeNodes:
                 self.run(i)
             return
 
-def startCoding(text):
-    lexer = run(text)
-    expParser = Parser(lexer)
-    inter = Interpreter(text, expParser.parseCode())
+
+def startCoding(string_code):
+    lexer = run(string_code)
+    exp_parser = Parser(lexer)
+    inter = Interpreter(string_code, exp_parser.parseCode())
     inter.run(inter.codeS)
     print(inter.scope)
 
@@ -124,4 +127,6 @@ n = 1
             }
          b = 5
          }
-         a = 3 + 5 '''
+         a = n < i 
+         print(a)'''
+startCoding(text)

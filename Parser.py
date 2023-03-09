@@ -40,17 +40,27 @@ class Parser:
         if self.match([TokenList['LPAREN']]):
             node = self.parseFormula()
             self.require([TokenList['RPAREN']])
+            if self.match([TokenList['ADD']]):
+                self.pos -= 1
+                operator = self.match([TokenList['ADD']])
+                rightNode = self.parseParenthes()
+                node = BinOperationNode(operator, node, rightNode)
             return node
+        elif self.pos + 1 < len(self.tokens) and self.tokens[self.pos + 1].type == TokenList['ADD']:
+            leftNode = self.parsVarOrNumb()
+            operator = self.match([TokenList['ADD']])
+            rightNode = self.parseParenthes()
+            return BinOperationNode(operator, leftNode, rightNode)
         else:
             return self.parseVariableOrNumbers()
 
     def parseFormula(self):
         leftNode = self.parseParenthes()
-        operator = self.match([TokenList['PLUS'], TokenList['MINUS']])
+        operator = self.match([TokenList['PLUS'], TokenList['MINUS'], TokenList['SIGNLESS'], TokenList['SIGNMORE'], TokenList['ADD'], TokenList['DIV']])
         while operator:
             rightNode = self.parseParenthes()
             leftNode = BinOperationNode(operator, leftNode, rightNode)
-            operator = self.match([TokenList['PLUS'], TokenList['MINUS']])
+            operator = self.match([TokenList['PLUS'], TokenList['MINUS'], TokenList['SIGNLESS'], TokenList['SIGNMORE'], TokenList['ADD'], TokenList['DIV']])
 
         return leftNode
 

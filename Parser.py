@@ -84,6 +84,10 @@ class Parser:
                 return LibOperationNode(lib, operator, arg)
             else:
                 return None
+        if self.match([TokenList["DEBUG"]]):
+            self.pos -= 1
+            lib = self.match([TokenList["DEBUG"]])
+            return LibOperationNode(lib, None, None)
 
         if self.match([TokenList["FLPAREN"]]):
             dicttemp = {}
@@ -178,7 +182,7 @@ class Parser:
 
     def parseExpression(self):
         if self.match([TokenList['IMPORT']]):
-            lib = self.match([TokenList["MATH"]]).text
+            lib = self.match([TokenList["MATH"], TokenList["DEBUG"]]).text
             return LibNode(lib)
 
         elif self.match([TokenList['VAR']]):

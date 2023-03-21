@@ -163,6 +163,11 @@ class Interpreter:
             if type(node.operand) == NumberNode:
                 print(node.operand.number.text)
 
+            if type(node.operand) == LibOperationNode:
+                if node.operand.lib.text == "debug" and node.operand.lib.text in self.modules:
+                    print(self.scope)
+                else:
+                    print(self.run(node.operand))
             if type(node.operand) == BinOperationNode:
                 print(self.run(node.operand))
             return
@@ -182,6 +187,7 @@ def startCoding(string_code):
 
 
 text = '''import math
+import debug
 a = {sd:5, sq:sds}
 n = 5
 i = 3
@@ -196,6 +202,6 @@ a = 5
             }
          b = math.cos(2)
          }
-         print(a)'''
+         print(debug)'''
 
 startCoding(text)

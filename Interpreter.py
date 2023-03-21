@@ -188,7 +188,7 @@ def startCoding(string_code):
 
 text = '''import math
 import debug
-a = {sd:5, sq:sds}
+a = {}
 n = 5
 i = 3
 a[sq] = 6

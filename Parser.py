@@ -37,7 +37,7 @@ class Parser:
                 self.require([TokenList["SQRPAREN"]])
                 return CallDictNode(VarNode(var), iterator)
             return VarNode(var)
-        print('VarOrNumbERROR')
+        return None
 
     def parseParenthes(self):
         if self.match([TokenList['LPAREN']]):
@@ -91,14 +91,11 @@ class Parser:
 
         if self.match([TokenList["FLPAREN"]]):
             dicttemp = {}
-            key = self.parseVariableOrNumbers()
-            key = key.variable.text if isinstance(key, VarNode) else key.number.text
-            self.require([TokenList["COLON"]])
-            value = self.parseVariableOrNumbers()
-            dicttemp[key] = value.variable.text if isinstance(value, VarNode) else (int(value.number.text) if value.number.type == TokenList['INT'] else float(value.number.text))
-            sep = self.match([TokenList["COMMA"]])
+            sep = True
             while sep:
                 key = self.parseVariableOrNumbers()
+                if key is None:
+                    break
                 key = key.variable.text if isinstance(key, VarNode) else key.number.text
                 self.require([TokenList["COLON"]])
                 value = self.parseVariableOrNumbers()

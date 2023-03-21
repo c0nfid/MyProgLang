@@ -1,10 +1,11 @@
 from Lex import *
 from Nodes import *
 
+
 class Parser:
 
     def __init__(self, tokens):
-        self.tokens = tokens #Token[]
+        self.tokens = tokens  # Token[]
         self.pos = 0
 
     def match(self, expected):
@@ -31,6 +32,10 @@ class Parser:
 
         var = self.match([TokenList['VAR']])
         if var:
+            if self.match([TokenList['SQLPAREN']]):
+                iterator = self.match([TokenList["VAR"]]).text
+                self.require([TokenList["SQRPAREN"]])
+                return CallDictNode(VarNode(var), iterator)
             return VarNode(var)
         print('VarOrNumbERROR')
 
@@ -53,12 +58,60 @@ class Parser:
             return self.parseVariableOrNumbers()
 
     def parseFormula(self):
+        if self.match([TokenList["MATH"]]):
+            self.pos -=1
+            lib = self.match([TokenList["MATH"]])
+            if self.match([TokenList["DOT"]]) and self.match(
+                    [TokenList["GCD"], TokenList["LOG"], TokenList["SQRT"], TokenList["SIN"], TokenList["COS"],
+                     TokenList["TANH"]]):
+                self.pos -=1
+                operator = self.match(
+                    [TokenList["GCD"], TokenList["LOG"], TokenList["SQRT"], TokenList["SIN"], TokenList["COS"],
+                     TokenList["TANH"]])
+                if self.require([TokenList["LPAREN"]]):
+                    if operator.type == TokenList["GCD"]:
+                        arg = list()
+                        arg.append(self.parseVariableOrNumbers())
+                        separator = self.match([TokenList["COMMA"]])
+                        while separator:
+                            arg.append(self.parseParenthes())
+                            separator = self.match([TokenList["COMMA"]])
+                    else:
+                        arg = self.parseVariableOrNumbers()
+                else:
+                    arg = None
+                self.require([TokenList["RPAREN"]])
+                return LibOperationNode(lib, operator, arg)
+            else:
+                return None
+        if self.match([TokenList["FLPAREN"]]):
+            dicttemp = {}
+            key = self.parseVariableOrNumbers()
+            key = key.variable.text if isinstance(key, VarNode) else key.number.text
+            self.require([TokenList["COLON"]])
+            value = self.parseVariableOrNumbers()
+            dicttemp[key] = value.variable.text if isinstance(value, VarNode) else (int(value.number.text) if value.number.type == TokenList['INT'] else float(value.number.text))
+            sep = self.match([TokenList["COMMA"]])
+            while sep:
+                key = self.parseVariableOrNumbers()
+                key = key.variable.text if isinstance(key, VarNode) else key.number.text
+                self.require([TokenList["COLON"]])
+                value = self.parseVariableOrNumbers()
+                dicttemp[key] = value.variable.text if isinstance(value, VarNode) else (int(value.number.text) if value.number.type == TokenList['INT'] else float(value.number.text))
+                sep = self.match([TokenList["COMMA"]])
+            self.require([TokenList["FRPAREN"]])
+            return DictNode(dicttemp)
+
         leftNode = self.parseParenthes()
-        operator = self.match([TokenList['PLUS'], TokenList['MINUS'], TokenList['<'], TokenList['>'], TokenList['MULTIPLY'], TokenList['DIV']])
+        operator = self.match(
+            [TokenList['PLUS'], TokenList['MINUS'], TokenList['<'], TokenList['>'], TokenList['MULTIPLY'],
+             TokenList['DIV']])
         while operator:
             rightNode = self.parseParenthes()
             leftNode = BinOperationNode(operator, leftNode, rightNode)
-            operator = self.match([TokenList['PLUS'], TokenList['MINUS'], TokenList['<'], TokenList['>'], TokenList['MULTIPLY'], TokenList['DIV']])
+            operator = self.match(
+                [TokenList['PLUS'], TokenList['MINUS'], TokenList['<'], TokenList['>'], TokenList['MULTIPLY'],
+                 TokenList['DIV']])
 
         return leftNode
 
@@ -87,7 +140,8 @@ class Parser:
             start = None
 
         left_node = self.parseVariableOrNumbers()
-        stop = BinOperationNode(self.match([TokenList['<'], TokenList['>'], TokenList['!=']]), left_node, self.parseVariableOrNumbers())
+        stop = BinOperationNode(self.match([TokenList['<'], TokenList['>'], TokenList['!=']]), left_node,
+                                self.parseVariableOrNumbers())
 
         if loop_type.type == TokenList['FOR']:
             if self.require([TokenList['SEMICOLON']]) is None:
@@ -122,8 +176,12 @@ class Parser:
         return body
 
     def parseExpression(self):
-        if(self.match([TokenList['VAR']])):
-            self.pos -=1
+        if self.match([TokenList['IMPORT']]):
+            lib = self.match([TokenList["MATH"]]).text
+            return LibNode(lib)
+
+        elif (self.match([TokenList['VAR']])):
+            self.pos -= 1
             varNode = self.parseVariableOrNumbers()
             assignOperator = self.match([TokenList['ASSIGN']])
             if assignOperator:
@@ -142,7 +200,7 @@ class Parser:
             return LoopNode(key_token, condition, body)
 
         elif self.match([TokenList['PRINT']]):
-            self.pos -=1
+            self.pos -= 1
             operator = self.match([TokenList['PRINT']])
             if self.require([TokenList['LPAREN']]) == None:
                 return None
@@ -151,7 +209,8 @@ class Parser:
                 return None
 
             return CommNode(operator, operand)
-        return None
+
+        raise SyntaxError("Ошибка определения оператора")
 
     def parseCode(self):
         root = RootNode()
@@ -163,18 +222,14 @@ class Parser:
 
 
 def run_Parser():
-    text = '''a = 3 + 5
-    for (i = 3; i < n; 35){
-            while (a != 5) {
-                g = 7
-                a = 5
-            }
-         b = 5
-         }
-         a = 3 + 5 '''
-    a = Parser(run(text))
-
+    text = '''import math
+    a = math.cos(x)'''
+    a = run(text)
+    a = Parser(a)
 
     l = a.parseCode()
     for i in l.codeNodes:
-        print(i)
+        print(i.right if isinstance(i, BinOperationNode) else i)
+
+
+run_Parser()

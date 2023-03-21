@@ -1,4 +1,5 @@
 from Parser import *
+import math
 
 
 class Interpreter:
@@ -7,6 +8,7 @@ class Interpreter:
         self.sourceCode = sourceCode
         self.codeS = strings
         self.scope = {}
+        self.modules = list()
 
     def run(self, node):
         if type(node) == NumberNode:
@@ -19,8 +21,14 @@ class Interpreter:
                 return self.run(node.left) - self.run(node.right)
             elif node.operator.type == TokenList['ASSIGN']:
                 result = self.run(node.right)
-                variableNode = node.left
-                self.scope[variableNode.variable.text] = result
+                if isinstance(node.left, CallDictNode):
+                    variable = node.left.variable
+                    iterator = node.left.iter
+                    print(type(variable), type(iterator), type(node.left.variable))
+                    self.scope[variable.variable.text][iterator] = result
+                else:
+                    variableNode = node.left
+                    self.scope[variableNode.variable.text] = result
                 return result
             elif (
                     node.operator.type == TokenList['>'] or node.operator.type == TokenList[
@@ -54,8 +62,16 @@ class Interpreter:
                         (left > right) if node.operator.type == TokenList['>'] else (left != right))
             else:
                 raise ValueError("Переменная не была объявлена")
-            #
-            #
+
+        if isinstance(node, DictNode):
+            return node.dict
+
+        if isinstance(node, CallDictNode):
+            value = self.run(node.variable)
+            iterator = node.iter
+
+            return value[iterator]
+
         if type(node) == VarNode:
             try:
                 if self.scope[node.variable.text] or self.scope[node.variable.text] == 0:
@@ -68,6 +84,9 @@ class Interpreter:
             if condition:
                 for i in node.body:
                     self.run(i)
+            return
+        if isinstance(node, LibNode):
+            self.modules.append(node.library)
             return
 
         if type(node) == LoopNode:
@@ -90,6 +109,24 @@ class Interpreter:
                     self.scope[iter] += int(node.condition.step.text)
                     self.run(node)
             return
+        if isinstance(node, LibOperationNode):
+            if node.lib.text in self.modules:
+                if node.operator.type == TokenList["COS"]:
+                    return math.cos(self.run(node.arg))
+                elif node.operator.type == TokenList["SIN"]:
+                    return math.sin(self.run(node.arg))
+                elif node.operator.type == TokenList["LOG"]:
+                    return math.log(self.run(node.arg))
+                elif node.operator.type == TokenList["GCD"]:
+                    return math.gcd(*node.arg)
+                elif node.operator.type == TokenList["SQRT"]:
+                    return math.sqrt(self.run(node.arg))
+                elif node.operator.type == TokenList["TANH"]:
+                    return math.tan(self.run(node.arg))
+                else:
+                    raise Exception("Ошибка в определении мат операции")
+            else:
+                raise Exception(f'Модуль {node.lib.text} не подключен')
 
         if type(node) == CommNode:
             if type(node.operand) == VarNode:
@@ -119,15 +156,20 @@ def startCoding(string_code):
     print(inter.scope)
 
 
-text = '''a = 3 + 5
+text = '''import math
+a = {sd:5, sq:sds}
 n = 5
 i = 3
+a[sq] = 6
+b = a[sq]
+print(b)
+a = 5
     for (i; i < n; 35){
             while (a != 5) {
                 g = 7
                 a = 5
             }
-         b = 5
+         b = math.cos(2)
          }
          print(a)'''
 startCoding(text)

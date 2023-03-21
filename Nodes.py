@@ -60,3 +60,29 @@ class CommNode(Node):
     def __init__(self, operator, operand):
         self.operator = operator
         self.operand = operand
+
+
+class LibNode(Node):
+
+    def __init__(self, library):
+        self.library = library
+
+
+class LibOperationNode(Node):
+
+    def __init__(self, lib, operator, arg):
+        self.lib = lib
+        self.operator = operator
+        self.arg = arg
+
+
+class DictNode(Node):
+
+    def __init__(self, dict):
+        self.dict = dict
+
+
+class CallDictNode(Node):
+    def __init__(self, variable, iter):
+        self.variable = variable
+        self.iter = iter

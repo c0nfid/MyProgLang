@@ -1,5 +1,6 @@
 import re
 
+
 class TokenType:
     def __init__(self, name, regex):
         self.name = name
@@ -48,6 +49,7 @@ TokenList = {"FLOAT": TokenType("FLOAT", '([0-9]*\.[0-9]+)'),
              "FRPAREN": TokenType("FRPAREN", "\\}"),
              "SQLPAREN": TokenType("SQLPAREN", "\\["),
              "SQRPAREN": TokenType("SQRPAREN", "\\]")}
+
 
 class Token:
     def __init__(self, type, text=None, pos=None):

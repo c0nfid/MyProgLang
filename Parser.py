@@ -9,7 +9,7 @@ class Parser:
         self.pos = 0
 
     def match(self, expected):
-        if (self.pos < len(self.tokens)):
+        if self.pos < len(self.tokens):
             currentToken = self.tokens[self.pos]
             if currentToken.type in expected:
                 self.pos += 1
@@ -19,7 +19,7 @@ class Parser:
 
     def require(self, expected):
         token = self.match(expected)
-        if (token == None):
+        if token is None:
             print('requereError', expected[0].name)
         else:
             return token
@@ -84,6 +84,7 @@ class Parser:
                 return LibOperationNode(lib, operator, arg)
             else:
                 return None
+
         if self.match([TokenList["FLPAREN"]]):
             dicttemp = {}
             key = self.parseVariableOrNumbers()
@@ -158,18 +159,18 @@ class Parser:
         return LoopConditionNode(start, stop, step)
 
     def parseBody(self):
-        if self.require([TokenList['FLPAREN']]) == None:
+        if self.require([TokenList['FLPAREN']]) is None:
             return None
         body = []
 
-        while (self.match([TokenList['FRPAREN']]) == None):
-            if self.match([TokenList['NEWLINE']]) == None:
+        while self.match([TokenList['FRPAREN']]) is None:
+            if self.match([TokenList['NEWLINE']]) is None:
                 pass
             if self.match([TokenList['FRPAREN']]):
                 return body
 
             bodyNode = self.parseExpression()
-            if bodyNode == None:
+            if bodyNode is None:
                 return None
             body.append(bodyNode)
 
@@ -180,7 +181,7 @@ class Parser:
             lib = self.match([TokenList["MATH"]]).text
             return LibNode(lib)
 
-        elif (self.match([TokenList['VAR']])):
+        elif self.match([TokenList['VAR']]):
             self.pos -= 1
             varNode = self.parseVariableOrNumbers()
             assignOperator = self.match([TokenList['ASSIGN']])
@@ -202,10 +203,10 @@ class Parser:
         elif self.match([TokenList['PRINT']]):
             self.pos -= 1
             operator = self.match([TokenList['PRINT']])
-            if self.require([TokenList['LPAREN']]) == None:
+            if self.require([TokenList['LPAREN']]) is None:
                 return None
             operand = self.parseFormula()
-            if self.require([TokenList['RPAREN']]) == None:
+            if self.require([TokenList['RPAREN']]) is None:
                 return None
 
             return CommNode(operator, operand)
@@ -221,7 +222,7 @@ class Parser:
         return root
 
 
-def run_Parser():
+def test_Parser():
     text = '''import math
     a = math.cos(x)'''
     a = run(text)
@@ -230,6 +231,3 @@ def run_Parser():
     l = a.parseCode()
     for i in l.codeNodes:
         print(i.right if isinstance(i, BinOperationNode) else i)
-
-
-run_Parser()

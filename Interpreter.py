@@ -11,55 +11,73 @@ class Interpreter:
         self.modules = list()
 
     def run(self, node):
+
         if type(node) == NumberNode:
             return int(node.number.text) if node.number.type == TokenList['INT'] else float(node.number.text)
 
         if type(node) == BinOperationNode:
+
             if node.operator.type == TokenList['PLUS']:
                 return self.run(node.left) + self.run(node.right)
+
             elif node.operator.type == TokenList['MINUS']:
                 return self.run(node.left) - self.run(node.right)
+
             elif node.operator.type == TokenList['ASSIGN']:
                 result = self.run(node.right)
+
                 if isinstance(node.left, CallDictNode):
                     variable = node.left.variable
                     iterator = node.left.iter
-                    print(type(variable), type(iterator), type(node.left.variable))
                     self.scope[variable.variable.text][iterator] = result
+
                 else:
-                    variableNode = node.left
-                    self.scope[variableNode.variable.text] = result
+                    variable = node.left
+                    self.scope[variable.variable.text] = result
+
                 return result
-            elif (
-                    node.operator.type == TokenList['>'] or node.operator.type == TokenList[
-                '<'] or node.operator.type == TokenList['!=']):
+
+            elif (node.operator.type == TokenList['>'] or
+                  node.operator.type == TokenList['<'] or
+                  node.operator.type == TokenList['!=']):
+
                 flag = False
                 if type(node.left) == VarNode:
                     try:
-                        if self.scope[node.left.variable.text] or self.scope[
-                            node.left.variable.text] == 0:
+                        if self.scope[node.left.variable.text] or \
+                                self.scope[node.left.variable.text] == 0:
                             flag = True
+
                     except KeyError:
+
                         raise Exception(
                             'Переменная с именем \'' + node.left.variable.text + '\' не была инициализирована')
+
                 if type(node.right) == VarNode:
                     try:
-                        if self.scope[node.right.variable.text] or self.scope[
-                            node.right.variable.text] == 0:
+                        if self.scope[node.right.variable.text] or \
+                                self.scope[node.right.variable.text] == 0:
+
                             left = int(self.scope[node.left.variable.text]) if flag else int(
                                 node.left.number.text)
                             right = int(self.scope[node.right.variable.text])
+
                             return (left < right) if node.operator.type == TokenList['<'] else (
-                                (left > right) if node.operator.type == TokenList['>'] else (left != right))
+                                (left > right) if node.operator.type == TokenList['>'] else
+                                (left != right))
+
                     except KeyError:
                         raise Exception(
                             'Переменная с именем \'' + node.right.variable.text + '\' не была инициализирована')
+
                 else:
                     left = int(self.scope[node.left.variable.text]) if flag else int(
                         node.left.number.text)
                     right = int(node.right.number.text)
+
                     return (left < right) if node.operator.type == TokenList['<'] else (
-                        (left > right) if node.operator.type == TokenList['>'] else (left != right))
+                        (left > right) if node.operator.type == TokenList['>'] else
+                        (left != right))
             else:
                 raise ValueError("Переменная не была объявлена")
 
@@ -81,10 +99,12 @@ class Interpreter:
 
         if type(node) == ConditionalNode:
             condition = self.run(node.condition.stop)
+
             if condition:
                 for i in node.body:
                     self.run(i)
             return
+
         if isinstance(node, LibNode):
             self.modules.append(node.library)
             return
@@ -92,10 +112,12 @@ class Interpreter:
         if type(node) == LoopNode:
             if node.type.type == TokenList['WHILE']:
                 condition = self.run(node.condition.stop)
+
                 if condition:
                     for i in node.body:
                         self.run(i)
                     self.run(node)
+
             if node.type.type == TokenList['FOR']:
                 iter = node.condition.start.left.variable.text
                 try:
@@ -103,12 +125,14 @@ class Interpreter:
                 except KeyError:
                     self.run(node.condition.start)
                 condition = self.run(node.condition.stop)
+
                 if condition:
                     for i in node.body:
                         self.run(i)
                     self.scope[iter] += int(node.condition.step.text)
                     self.run(node)
             return
+
         if isinstance(node, LibOperationNode):
             if node.lib.text in self.modules:
                 if node.operator.type == TokenList["COS"]:
@@ -135,6 +159,7 @@ class Interpreter:
                 except KeyError:
                     raise Exception(
                         'Переменная с именем \'' + node.operand.variable.text + '\' не была инициализирована')
+
             if type(node.operand) == NumberNode:
                 print(node.operand.number.text)
 
@@ -153,7 +178,7 @@ def startCoding(string_code):
     exp_parser = Parser(lexer)
     inter = Interpreter(string_code, exp_parser.parseCode())
     inter.run(inter.codeS)
-    print(inter.scope)
+    #print(inter.scope)
 
 
 text = '''import math
@@ -172,4 +197,5 @@ a = 5
          b = math.cos(2)
          }
          print(a)'''
+
 startCoding(text)
